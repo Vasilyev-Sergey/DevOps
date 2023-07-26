@@ -1,0 +1,19 @@
+---
+- name: Deploy Webserver
+  hosts: web_servers
+  become: true
+  vars:
+    domain: ansible-test.com
+    server_name: ansible-test.com
+    enable_https: yes
+    ssl_cert_path: /etc/nginx/ssl/{{ domain }}.crt
+    ssl_key_path: /etc/nginx/ssl/{{ domain }}.key
+    php_socket: unix:/run/php/php7.4-fpm.sock  
+    php_version: "7.4"  
+    max_children: 10
+    start_servers: 2
+    min_spare_servers: 1
+    max_spare_servers: 3
+  roles:
+    - nginx
+    - php-fpm

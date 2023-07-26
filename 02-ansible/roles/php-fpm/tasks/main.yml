@@ -1,0 +1,17 @@
+---
+- name: Install PHP-FPM
+  apt:
+    name: php-fpm
+    state: present
+
+- name: Enable PHP-FPM Srvs
+  service:
+    name: php7.4-fpm  
+    state: started
+    enabled: yes
+
+- name: Copy PHP-FPM config
+  template:
+    src: php-fpm.conf.j2
+    dest: /etc/php/{{ php_version }}/fpm/pool.d/{{ domain }}.conf
+  notify: Reload PHP-FPM
