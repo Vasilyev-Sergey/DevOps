@@ -1,0 +1,15 @@
+; PHP-FPM configuration template for {{ domain }}
+[{{ domain }}]
+
+user = www-data
+group = www-data
+
+listen = {{ php_socket }}
+listen.owner = www-data
+listen.group = www-data
+
+pm = dynamic
+pm.max_children = {{ max_children }}
+pm.start_servers = {{ start_servers }}
+pm.min_spare_servers = {{ min_spare_servers }}
+pm.max_spare_servers = {{ max_spare_servers }}

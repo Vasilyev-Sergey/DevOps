@@ -1,0 +1,64 @@
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Enable Nginx Service
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Create Nginx sites-available dir
+  file:
+    path: /etc/nginx/sites-available
+    state: directory
+
+- name: Create Nginx sites-enabled dir
+  file:
+    path: /etc/nginx/sites-enabled
+    state: directory
+
+- name: Create Nginx root dir
+  file:
+    path: /var/www/{{ domain }}
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+- name: Copy Nginx config template
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{ domain }}.conf
+  notify: Restart Nginx
+
+- name: Enable Nginx vhost
+  file:
+    src: /etc/nginx/sites-available/{{ domain }}.conf
+    dest: /etc/nginx/sites-enabled/{{ domain }}.conf
+    state: link
+  notify: Restart Nginx
+
+- name: Copy index.php to webserver
+  template:
+    src: index.php.j2
+    dest: /var/www/{{ domain }}/index.php
+
+- name: Create Nginx ssl dir
+  file:
+    path: /etc/nginx/ssl
+    state: directory
+
+- name: Copy SSL cert
+  copy:
+    src: ansible-test.crt
+    dest: /etc/nginx/ssl/{{ domain }}.crt
+  notify: Restart Nginx
+
+- name: Copy SSL private key
+  copy:
+    src: ansible-test.key 
+    dest: /etc/nginx/ssl/{{ domain }}.key
+  notify: Restart Nginx
